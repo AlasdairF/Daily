@@ -2,7 +2,6 @@ package daily
 
 import (
 	"time"
-	"sync"
 )
 
 const day = time.Hour * 24
@@ -39,7 +38,7 @@ func Run(fn func(), now bool) {
 
 func daily() {
 	for {
-		time.Sleep(time.Now().UnixNano() % day)
+		time.Sleep(time.Duration(time.Now().UnixNano()) % day)
 		for _, j := range todo {
 			go j.do()
 		}
