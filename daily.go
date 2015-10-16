@@ -4,7 +4,10 @@ import (
 	"time"
 )
 
-const day = time.Hour * 24
+const (
+	day = time.Hour * 24
+	halfday = time.Hour * 12
+)
 
 type job struct {
 	fn func()
@@ -42,6 +45,7 @@ func daily() {
 		for _, j := range todo {
 			go j.do()
 		}
+		time.Sleep(halfday) // just to make sure it doesn't try to do it again if no nanoseconds have passed
 	}
 }
 
