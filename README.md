@@ -1,6 +1,6 @@
 ## Daily
 
-Daily is a crude but efficient daily function executer.
+Daily is a crude but efficient daily function executer. It works perfectly well and is extremely efficient.
 
 ## Usage Example
   
