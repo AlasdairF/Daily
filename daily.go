@@ -30,15 +30,21 @@ func (j *job) do() {
 	}
 }
 
+func (j *job) doNow() {
+	j.inProgress = true
+	defer j.finished()
+	j.fn()
+}
+
 func Run(fn func(), secondsPastMidnight int, now bool) {
 	l := len(todo)
 	newar := make([]job, l + 1)
 	copy(newar, todo)
 	newar[l] = job{fn, false, time.Duration(secondsPastMidnight % 86400) * time.Second}
-	todo = newar
 	if now {
-		go todo[l].do()
+		go todo[l].doNow()
 	}
+	todo = newar
 }
 
 func daily() {
