@@ -42,7 +42,7 @@ func Run(fn func(), secondsPastMidnight int, now bool) {
 	copy(newar, todo)
 	newar[l] = job{fn, false, time.Duration(secondsPastMidnight % 86400) * time.Second}
 	if now {
-		go todo[l].doNow()
+		go newar[l].doNow()
 	}
 	todo = newar
 }
