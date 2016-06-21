@@ -12,7 +12,7 @@ const (
 type job struct {
 	fn func()
 	inProgress bool
-	wait int64
+	wait time.Duration
 }
 
 var todo []job
@@ -36,11 +36,11 @@ func (j *job) doNow() {
 	j.fn()
 }
 
-func Run(fn func(), secondsPastMidnight int64, now bool) {
+func Run(fn func(), secondsPastMidnight time.Duration, now bool) {
 	l := len(todo)
 	newar := make([]job, l + 1)
 	copy(newar, todo)
-	newar[l] = job{fn, false, (secondsPastMidnight % 86400) * time.Second}
+	newar[l] = job{fn:fn, inProgress:false, wait:(secondsPastMidnight % 86400) * time.Second}
 	todo = newar
 	if now {
 		go newar[l].doNow()
@@ -49,7 +49,7 @@ func Run(fn func(), secondsPastMidnight int64, now bool) {
 
 func daily() {
 	for {
-		time.Sleep(time.Now().UnixNano() % day)
+		time.Sleep(time.Duration(time.Now().UnixNano()) % day)
 		for _, j := range todo {
 			go j.do()
 		}
