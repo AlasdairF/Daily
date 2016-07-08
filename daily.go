@@ -25,7 +25,7 @@ type job struct {
 func (j *job) finished() {
 	j.inProgress = false
 	if logging {
-		log.Println(`Daily: Finished`, name)
+		log.Println(`Daily: Finished`, j.name)
 	}
 }
 
@@ -33,12 +33,12 @@ func (j *job) do() {
 	time.Sleep(j.wait)
 	if j.inProgress {
 		if logging {
-			log.Println(`Daily: Already in progress`, name)
+			log.Println(`Daily: Already in progress`, j.name)
 		}
 	} else {
 		j.inProgress = true
 		if logging {
-			log.Println(`Daily: Running`, name)
+			log.Println(`Daily: Running`, j.name)
 		}
 		defer j.finished()
 		j.fn()
@@ -48,7 +48,7 @@ func (j *job) do() {
 func (j *job) doNow() {
 	j.inProgress = true
 	if logging {
-		log.Println(`Daily: Running`, name)
+		log.Println(`Daily: Running`, j.name)
 	}
 	defer j.finished()
 	j.fn()
