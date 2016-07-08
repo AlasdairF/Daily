@@ -2,6 +2,7 @@ package daily
 
 import (
 	"time"
+	"log"
 )
 
 const (
@@ -9,22 +10,36 @@ const (
 	halfday = time.Hour * 12
 )
 
+var (
+	todo []job
+	logging bool
+)
+
 type job struct {
 	fn func()
 	inProgress bool
 	wait time.Duration
+	name string
 }
-
-var todo []job
 
 func (j *job) finished() {
 	j.inProgress = false
+	if logging {
+		log.Println(`Daily: Finished`, name)
+	}
 }
 
 func (j *job) do() {
 	time.Sleep(j.wait)
-	if !j.inProgress {
+	if j.inProgress {
+		if logging {
+			log.Println(`Daily: Already in progress`, name)
+		}
+	} else {
 		j.inProgress = true
+		if logging {
+			log.Println(`Daily: Running`, name)
+		}
 		defer j.finished()
 		j.fn()
 	}
@@ -32,15 +47,22 @@ func (j *job) do() {
 
 func (j *job) doNow() {
 	j.inProgress = true
+	if logging {
+		log.Println(`Daily: Running`, name)
+	}
 	defer j.finished()
 	j.fn()
 }
 
-func Run(fn func(), secondsPastMidnight time.Duration, now bool) {
+func EnableLogging() {
+	logging = true
+}
+
+func Run(name string, fn func(), secondsPastMidnight time.Duration, now bool) {
 	l := len(todo)
 	newar := make([]job, l + 1)
 	copy(newar, todo)
-	newar[l] = job{fn:fn, inProgress:false, wait:(secondsPastMidnight % 86400) * time.Second}
+	newar[l] = job{fn:fn, inProgress:false, wait:(secondsPastMidnight % 86400) * time.Second, name:name}
 	todo = newar
 	if now {
 		go newar[l].doNow()
