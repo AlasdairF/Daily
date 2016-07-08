@@ -7,7 +7,6 @@ import (
 
 const (
 	day = time.Hour * 24
-	halfday = time.Hour * 12
 )
 
 var (
@@ -62,7 +61,7 @@ func Run(name string, fn func(), secondsPastMidnight time.Duration, now bool) {
 	l := len(todo)
 	newar := make([]job, l + 1)
 	copy(newar, todo)
-	newar[l] = job{fn:fn, inProgress:false, wait:(secondsPastMidnight % 86400) * time.Second, name:name}
+	newar[l] = job{fn:fn, inProgress:false, wait:secondsPastMidnight * time.Second, name:name}
 	todo = newar
 	if now {
 		go newar[l].doNow()
@@ -71,11 +70,11 @@ func Run(name string, fn func(), secondsPastMidnight time.Duration, now bool) {
 
 func daily() {
 	for {
-		time.Sleep(time.Duration(time.Now().UnixNano()) % day)
+		time.Sleep(day - (time.Duration(time.Now().UnixNano()) % day))
 		for _, j := range todo {
 			go j.do()
 		}
-		time.Sleep(halfday) // just to make sure it doesn't try to do it again if no nanoseconds have passed
+		time.Sleep(time.Minute) // just to make sure it doesn't try to do it again if no nanoseconds have passed
 	}
 }
 
