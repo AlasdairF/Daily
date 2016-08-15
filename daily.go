@@ -10,7 +10,7 @@ const (
 )
 
 var (
-	todo []job
+	todo []*job
 	logging bool
 )
 
@@ -58,13 +58,10 @@ func EnableLogging() {
 }
 
 func Run(name string, fn func(), secondsPastMidnight time.Duration, now bool) {
-	l := len(todo)
-	newar := make([]job, l + 1)
-	copy(newar, todo)
-	newar[l] = job{fn:fn, inProgress:false, wait:secondsPastMidnight * time.Second, name:name}
-	todo = newar
+	j := &job{fn:fn, inProgress:false, wait:secondsPastMidnight * time.Second, name:name}
+	todo = append(todo, j)
 	if now {
-		go newar[l].doNow()
+		go j.doNow()
 	}
 }
 
